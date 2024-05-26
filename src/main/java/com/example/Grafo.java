@@ -2,85 +2,52 @@ package src.main.java.com.example;
 import java.util.*;
 
 public class Grafo {
-    private int[][] distancias;
-    private String[][] caminos;
-    private Map<String, Integer> ciudades;
-    private String[] indiceCiudades;
-    private int numCiudades;
-    private static final int INF = Integer.MAX_VALUE / 2;
+    private Map<String, Map<String, Integer>> conexiones;
+    private List<String> ciudades;
 
-    public Grafo(Set<String> conjuntoCiudades, List<String[]> datos) {
-        numCiudades = conjuntoCiudades.size();
-        ciudades = new HashMap<>();
-        indiceCiudades = new String[numCiudades];
+    public Grafo() {
+        conexiones = new HashMap<>();
+        ciudades = new ArrayList<>();
+    }
 
-        int index = 0;
-        for (String ciudad : conjuntoCiudades) {
-            ciudades.put(ciudad, index);
-            indiceCiudades[index] = ciudad;
-            index++;
-        }
+    public void agregarConexion(String ciudad1, String ciudad2, int distancia) {
+        agregarCiudad(ciudad1);
+        agregarCiudad(ciudad2);
 
-        distancias = new int[numCiudades][numCiudades];
-        caminos = new String[numCiudades][numCiudades];
+        conexiones.computeIfAbsent(ciudad1, k -> new HashMap<>()).put(ciudad2, distancia);
+        conexiones.computeIfAbsent(ciudad2, k -> new HashMap<>()).put(ciudad1, distancia);
+    }
 
-        for (int i = 0; i < numCiudades; i++) {
-            Arrays.fill(distancias[i], INF);
-            distancias[i][i] = 0;
-        }
-
-        for (String[] datosLinea : datos) {
-            int desde = ciudades.get(datosLinea[0]);
-            int hacia = ciudades.get(datosLinea[1]);
-            int distancia = Integer.parseInt(datosLinea[2]);
-            distancias[desde][hacia] = distancia;
-            caminos[desde][hacia] = datosLinea[1];
+    private void agregarCiudad(String ciudad) {
+        if (!ciudades.contains(ciudad)) {
+            ciudades.add(ciudad);
         }
     }
 
-    public int[][] getDistancias() {
-        return distancias;
-    }
-
-    public String[][] getCaminos() {
-        return caminos;
-    }
-
-    public String[] getIndiceCiudades() {
-        return indiceCiudades;
-    }
-
-    public Map<String, Integer> getCiudades() {
+    public List<String> getCiudades() {
         return ciudades;
     }
 
-    public void actualizarGrafo(String ciudad1, String ciudad2, int nuevaDistancia) {
-        int desde = ciudades.get(ciudad1);
-        int hacia = ciudades.get(ciudad2);
-
-        distancias[desde][hacia] = nuevaDistancia;
-        caminos[desde][hacia] = ciudad2;
-    }
-
-    public void eliminarArco(String ciudad1, String ciudad2) {
-        int desde = ciudades.get(ciudad1);
-        int hacia = ciudades.get(ciudad2);
-
-        distancias[desde][hacia] = INF;
-        caminos[desde][hacia] = null;
-    }
-
-    public void imprimirMatriz() {
-        for (int i = 0; i < numCiudades; i++) {
-            for (int j = 0; j < numCiudades; j++) {
-                if (distancias[i][j] == INF) {
-                    System.out.print("INF ");
-                } else {
-                    System.out.print(distancias[i][j] + " ");
-                }
-            }
-            System.out.println();
+    public int obtenerDistancia(String ciudad1, String ciudad2) {
+        if (conexiones.containsKey(ciudad1) && conexiones.get(ciudad1).containsKey(ciudad2)) {
+            return conexiones.get(ciudad1).get(ciudad2);
+        } else {
+            return Integer.MAX_VALUE; // Distancia infinita si no hay conexión directa
         }
     }
-}
 
+    public Map<String, Map<String, Integer>> getConexiones() {
+        return conexiones;
+    }
+
+    public void setConexiones(Map<String, Map<String, Integer>> conexiones) {
+        this.conexiones = conexiones;
+        for (String ciudad1 : conexiones.keySet()) {
+            for (String ciudad2 : conexiones.get(ciudad1).keySet()) {
+                agregarCiudad(ciudad1);
+                agregarCiudad(ciudad2);
+            }
+        }
+    }
+    
+}

@@ -1,28 +1,45 @@
 package src.main.java.com.example;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 public class FileManager {
-    
-    public static Grafo leerArchivo(String archivo) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(archivo));
-        String linea;
-        Set<String> conjuntoCiudades = new HashSet<>();
+    private final String rutaArchivo;
+    private Map<String, Map<String, Integer>> grafo;
 
-        List<String[]> datos = new ArrayList<>();
-        while ((linea = br.readLine()) != null) {
-            String[] partes = linea.split(" ");
-            conjuntoCiudades.add(partes[0]);
-            conjuntoCiudades.add(partes[1]);
-            datos.add(partes);
+    public FileManager(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
+        this.grafo = new HashMap<>();
+    }
+
+    public void leerArchivo() {
+        try {
+            Scanner scanner = new Scanner(new File(rutaArchivo));
+            while (scanner.hasNextLine()) {
+                String[] datos = scanner.nextLine().split(" ");
+                String ciudad1 = datos[0];
+                String ciudad2 = datos[1];
+                int distancia = Integer.parseInt(datos[2]);
+                agregarConexion(ciudad1, ciudad2, distancia);
+                agregarConexion(ciudad2, ciudad1, distancia); // Considerando el grafo como no dirigido
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        br.close();
+    }
 
-        return new Grafo(conjuntoCiudades, datos);
+    private void agregarConexion(String ciudad1, String ciudad2, int distancia) {
+        if (!grafo.containsKey(ciudad1)) {
+            grafo.put(ciudad1, new HashMap<>());
+        }
+        grafo.get(ciudad1).put(ciudad2, distancia);
+    }
+
+    public Map<String, Map<String, Integer>> obtenerGrafo() {
+        return grafo;
     }
 }
-
-
-
