@@ -1,4 +1,4 @@
-package src.main.java.com.example;
+package com.example;
 import java.util.List;
 import java.util.Scanner;
 
@@ -45,16 +45,14 @@ public class App {
                     System.out.println("La ciudad centro es: " + ciudadCentro);
                     break;
                 case "3":
-                    System.out.println("Agrega nueva ruta");
-                    System.out.print("Ciudad origen: ");
-                    String ciud1 = scanner.nextLine();
-                    System.out.print("Ciudad destino: ");
-                    String ciud2 = scanner.nextLine();
-                    System.out.print("Distancia en INT: ");
-                    int dist = scanner.nextInt();
-                    scanner.nextLine();
-                    grafo.agregarConexion(ciud1, ciud2, dist);
-                    fileManager.guardarConexion();
+                    App app = new App();
+                    System.out.println("1.Agregar\n2.Eliminar");
+                    String op2 = scanner.nextLine();
+                    if (op2.equals("1")){
+                        app.agregarNodo(scanner, grafo, fileManager);
+                    }else if(op2.equals("2")){
+                        app.eliminarNodo(scanner, grafo, fileManager);
+                    }else{ System.out.println("Algo valido please");}
                     // Recargar el programa
                     ejecutarPrograma();
                     return;
@@ -67,5 +65,28 @@ public class App {
             }
         } while (!opcion.equals("4"));
         scanner.close();
+    }
+
+    private void agregarNodo(Scanner scanner, Grafo grafo, FileManager fileManager){
+        System.out.println("Agrega nueva ruta");
+        System.out.print("Ciudad origen: ");
+        String ciud1 = scanner.nextLine();
+        System.out.print("Ciudad destino: ");
+        String ciud2 = scanner.nextLine();
+        System.out.print("Distancia en INT: ");
+        int dist = scanner.nextInt();
+        scanner.nextLine();
+        grafo.agregarConexion(ciud1, ciud2, dist);
+        fileManager.guardarConexion();
+    }
+
+    private void eliminarNodo(Scanner scanner, Grafo grafo, FileManager fileManager){
+        System.out.print("Ciudad origen: ");
+        String origenEliminar = scanner.nextLine();
+        System.out.print("Ciudad destino: ");
+        String destinoEliminar = scanner.nextLine();
+        grafo.eliminarConexion(origenEliminar, destinoEliminar);
+        fileManager.guardarConexion(); // Guardar el grafo actualizado en el archivo
+        System.out.println("Ruta eliminada correctamente.");
     }
 }

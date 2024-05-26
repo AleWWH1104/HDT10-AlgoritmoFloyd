@@ -1,4 +1,4 @@
-package src.main.java.com.example;
+package com.example;
 import java.util.*;
 
 public class Grafo {
@@ -18,6 +18,14 @@ public class Grafo {
         conexiones.computeIfAbsent(ciudad2, k -> new HashMap<>()).put(ciudad1, distancia);
     }
 
+    public void eliminarConexion(String ciudadOrigen, String ciudadDestino) {
+        if (conexiones.containsKey(ciudadOrigen) && conexiones.get(ciudadOrigen).containsKey(ciudadDestino)) {
+            conexiones.get(ciudadOrigen).remove(ciudadDestino);
+        } else {
+            System.out.println("La conexión especificada no existe en el grafo.");
+        }
+    }
+    
     private void agregarCiudad(String ciudad) {
         if (!ciudades.contains(ciudad)) {
             ciudades.add(ciudad);
